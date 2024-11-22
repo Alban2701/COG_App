@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Form\CategoryType;
+use App\Repository\PostRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,10 +15,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function index(): Response
+    public function index(PostRepository $postRepository): Response
     {
+        $counts = $postRepository->nbAllSubjects();
+
         return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+           'counts' => $counts,
         ]);
     }
     #[Route('/category/add', name: 'category_add')]

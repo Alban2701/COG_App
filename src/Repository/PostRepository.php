@@ -16,6 +16,35 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
+    public function findLastPosts(int $nb = 5)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.active = :active')
+            ->setParameter('active', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($nb)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function nbAllSubjects(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+            (SELECT COUNT(*) FROM user) as nbusers,
+            (SELECT COUNT(*) FROM post) as nbposts,
+            (SELECT COUNT(*) FROM category) as nbcategories
+            ';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery();
+
+        // returns an array of arrays (Attention : tableau à 2 dimensions)
+        return $resultSet->fetchAllAssociative();
+    }
+
     //    /**
     //     * @return Post[] Returns an array of Post objects
     //     */
