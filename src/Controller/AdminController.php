@@ -20,7 +20,7 @@ class AdminController extends AbstractController
         $counts = $postRepository->nbAllSubjects();
 
         return $this->render('admin/index.html.twig', [
-           'counts' => $counts,
+            'counts' => $counts,
         ]);
     }
     #[Route('/category/add', name: 'category_add')]
