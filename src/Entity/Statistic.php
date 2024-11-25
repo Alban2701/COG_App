@@ -18,6 +18,13 @@ class Statistic
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    /**
+     * @var Collection<int, CharacterStatistic>
+     */
+    #[ORM\OneToMany(targetEntity: CharacterStatistic::class, mappedBy: 'statistc', orphanRemoval: true)]
+    private Collection $characterStatistics;
+
+
     public function getId(): ?int
     {
         return $this->id;

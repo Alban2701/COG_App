@@ -26,7 +26,7 @@ class Character
     /**
      * @var Collection<int, CharacterStatistic>
      */
-    #[ORM\OneToMany(targetEntity: CharacterStatistic::class, mappedBy: 'characterId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CharacterStatistic::class, mappedBy: 'character', orphanRemoval: true)]
     private Collection $characterStatistics;
 
     #[ORM\Column]

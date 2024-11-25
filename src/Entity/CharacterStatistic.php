@@ -14,39 +14,55 @@ class CharacterStatistic
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    
+    #[ORM\ManyToOne(inversedBy: 'characterStatistics')]
     #[ORM\Column]
-    private ?int $stat_id = null;
+    private ?Statistic $statistic = null;
 
     #[ORM\ManyToOne(inversedBy: 'characterStatistics')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Character $characterId = null;
+    private ?Character $character = null;
+
+    #[ORM\Column]
+    private ?int $value = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStatId(): ?int
+    public function getStatistic(): ?int
     {
-        return $this->stat_id;
+        return $this->statistic;
     }
 
-    public function setStatId(int $stat_id): static
+    public function setStatistic(Statistic $statistic): static
     {
-        $this->stat_id = $stat_id;
+        $this->statistic = $statistic;
 
         return $this;
     }
 
     public function getCharacterId(): Character
     {
-        return $this->characterId;
+        return $this->character;
     }
 
     public function setCharacterId(?Character $characterId): static
     {
-        $this->characterId = $characterId;
+        $this->character = $characterId;
+
+        return $this;
+    }
+
+    public function getValue(): ?int
+    {
+        return $this->value;
+    }
+
+    public function setValue(int $value): static
+    {
+        $this->value = $value;
 
         return $this;
     }

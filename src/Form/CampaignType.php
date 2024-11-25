@@ -7,7 +7,7 @@ use App\Entity\Campaign;
 use App\Entity\Character;
 use Doctrine\DBAL\Types\StringType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\SubmitButton;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,7 +36,7 @@ class CampaignType extends AbstractType
             //     'choice_label' => 'id',
             //     'multiple' => true,
             // ])
-            ->add('Valider', SubmitButton::class)
+            ->add('Valider', SubmitType::class)
         ;
     }
 

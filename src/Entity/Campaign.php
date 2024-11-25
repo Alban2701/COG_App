@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\CampaignRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CampaignRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CampaignRepository::class)]
 class Campaign
@@ -16,23 +17,17 @@ class Campaign
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
-
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'campaigns')]
-    private Collection $gameMaster;
+    private Collection $gameMasters;
 
     /**
      * @var Collection<int, Character>
@@ -46,9 +41,17 @@ class Campaign
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'campaign')]
     private Collection $posts;
 
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: "create")]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: "update")]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
-        $this->gameMaster = new ArrayCollection();
+        $this->gameMasters = new ArrayCollection();
         $this->characters = new ArrayCollection();
         $this->posts = new ArrayCollection();
     }
@@ -84,24 +87,24 @@ class Campaign
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -109,15 +112,20 @@ class Campaign
     /**
      * @return Collection<int, User>
      */
-    public function getGameMaster(): Collection
+    public function getGameMasters(): Collection
     {
-        return $this->gameMaster;
+        return $this->gameMasters;
+    }
+
+    public function checkGameMaster(User $user): bool
+    {
+        return $this->gameMasters->contains($user);
     }
 
     public function addGameMaster(User $gameMaster): static
     {
-        if (!$this->gameMaster->contains($gameMaster)) {
-            $this->gameMaster->add($gameMaster);
+        if (!$this->gameMasters->contains($gameMaster)) {
+            $this->gameMasters->add($gameMaster);
         }
 
         return $this;
@@ -125,7 +133,7 @@ class Campaign
 
     public function removeGameMaster(User $gameMaster): static
     {
-        $this->gameMaster->removeElement($gameMaster);
+        $this->gameMasters->removeElement($gameMaster);
 
         return $this;
     }

@@ -39,9 +39,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isVerified = false;
 
     /**
-     * @var Collection<int, Post>
+     * @var Collection<int, Campaign>
      */
-    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Campaign::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $posts;
 
     /**
@@ -158,14 +158,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Post>
+     * @return Collection<int, Campaign>
      */
     public function getPosts(): Collection
     {
         return $this->posts;
     }
 
-    public function addPost(Post $post): static
+    public function addPost(Campaign $post): static
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
@@ -175,7 +175,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removePost(Post $post): static
+    public function removePost(Campaign $post): static
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)

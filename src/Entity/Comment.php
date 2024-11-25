@@ -26,7 +26,7 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Post $post = null;
+    private ?Campaign $post = null;
 
     public function getId(): ?int
     {
@@ -69,12 +69,12 @@ class Comment
         return $this;
     }
 
-    public function getPost(): ?Post
+    public function getPost(): ?Campaign
     {
         return $this->post;
     }
 
-    public function setPost(?Post $post): static
+    public function setPost(?Campaign $post): static
     {
         $this->post = $post;
 
