@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\User;
 
 class CampaignController extends AbstractController
 {
@@ -21,12 +22,17 @@ class CampaignController extends AbstractController
     public function read(Request $request): Response
     {
         $user = $this->getUser();
-        $campaignsGM = $user->getCampaigns();
-        $campaignsCh = [];
-        foreach ($user->getCharacters() as $character) {
-            foreach ($character->getCampaigns() as $campaign) {
-                array_push($campaignsCh, $campaign);
+        if ($user instanceof User) {
+            // Accéder aux méthodes spécifiques de User
+            $campaignsGM = $user->getCampaigns();
+            $campaignsCh = [];
+            foreach ($user->getCharacters() as $character) {
+                foreach ($character->getCampaigns() as $campaign) {
+                    array_push($campaignsCh, $campaign);
+                }
             }
+        } else {
+            // Gérer l'absence ou l'erreur de type
         }
 
         return new Response(json_encode(["campaignsGM" => $campaignsGM, "campaignsCh" => $campaignsCh]));

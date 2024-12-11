@@ -5,7 +5,7 @@
 
 {% block content %}
 	<!-- Page Header-->
-	<header class="masthead" style="background-image: url('{{ asset("/clean/assets/img/home-bg.jpg") }}')">
+	<header class="masthead" style="background-image: url('{{ asset(" /clean/assets/img/home-bg.jpg") }}')">
 		<div class="container position-relative px-4 px-lg-5">
 			<div class="row gx-4 gx-lg-5 justify-content-center">
 				<div class="col-md-10 col-lg-8 col-xl-7">
@@ -18,31 +18,30 @@
 		</div>
 	</header>
 
-	{# {{dump(posts)}} #}
-
 	<!-- Main Content-->
 	<div class="container px-4 px-lg-5">
 		<div class="row gx-4 gx-lg-5 justify-content-center">
-			<div
-				class="col-md-10 col-lg-8 col-xl-7">
-				{% for post in posts %}
-				
+			<div class="col-md-10 col-lg-8 col-xl-7">
+				{% for campaign in campaigns %}
+
 					<!-- Post preview-->
 					<div class="post-preview">
-						<a href="{{ path('post_view', {id: post.id}) }}">
-							<h2 class="post-title">{{ post.title }}</h2>
-							<img src="{{ post.image }}" alt="" style="width: 100%">
-							<h3 class="post-subtitle">{{ post.content | u.truncate(150, '...')}}</h3>
+						<a href="{{ path('post_view', {id: campaign.id}) }}">
+							<h2 class="post-title">{{ campaign.name }}</h2>
+							<h3 class="post-subtitle">{{ campaign.description | u.truncate(150, '...')}}</h3>
 						</a>
 						<p class="post-meta">
-							Posté par
-							<a href="#!">{{ post.user.email}}</a>
-							{{ post.createdAt | ago }} - Classé dans {{ post.category.name }}
+							Créé par
+							<a href="#!">
+								{% for gameMaster in campaign.gameMasters %}
+									<p>{{ gameMaster.username }}</p>
+								{% endfor %}
+							</a>
+							{{ campaign.createdAt | ago }}
 						</p>
 					</div>
 					<!-- Divider-->
-					<hr
-					class="my-4"/>
+					<hr class="my-4"/>
 
 				{% endfor %}
 

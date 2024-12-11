@@ -20,25 +20,25 @@ class CampaignType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, ["label" => "Nom de la catégorie", 'required' => true])
+            ->add('name', TextType::class, ["label" => "Nom de votre nouvelle campagne", 'required' => true])
             ->add('description')
             ->add('active', CheckboxType::class, [
                 'label' => 'Active',
                 'required' => false,
             ])
             // Les champs gameMaster et characters
-            ->add('gameMaster', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username', // Assurez-vous d'utiliser un champ existant
-                'multiple' => false,  // Seulement un Game Master pour la campagne
-                'mapped' => false,    // Ne mappe pas ce champ à une propriété de Campaign
-            ])
-            ->add('characters', EntityType::class, [
-                'class' => Character::class,
-                'choice_label' => 'name', // Utilise un champ existant de Character
-                'multiple' => true,  // Un ou plusieurs personnages
-                'mapped' => false,   // Ne mappe pas ce champ à une propriété de Campaign
-            ])
+            // ->add('gameMaster', EntityType::class, [
+            //     'class' => User::class,
+            //     'choice_label' => 'username', // Assurez-vous d'utiliser un champ existant
+            //     'multiple' => false,  // Seulement un Game Master pour la campagne
+            //     'mapped' => false,    // Ne mappe pas ce champ à une propriété de Campaign
+            // ])
+            // ->add('characters', EntityType::class, [
+            //     'class' => Character::class,
+            //     'choice_label' => 'name', // Utilise un champ existant de Character
+            //     'multiple' => true,  // Un ou plusieurs personnages
+            //     'mapped' => false,   // Ne mappe pas ce champ à une propriété de Campaign
+            // ])
             ->add('Valider', SubmitType::class);
     }
 

@@ -16,7 +16,7 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Campaign::class);
     }
 
-    public function findLastPosts(int $nb = 5)
+    public function findLastCampaigns(int $nb = 5)
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.active = :active')

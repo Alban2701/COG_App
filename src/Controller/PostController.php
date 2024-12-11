@@ -17,9 +17,9 @@ class PostController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(PostRepository $postRepository): Response
     {
-        $posts = $postRepository->findLastPosts();
+        $campaigns = $postRepository->findLastCampaigns();
         return $this->render('post/index.html.twig', [
-            'posts' => $posts,
+            'campaigns' => $campaigns,
         ]);
     }
 
