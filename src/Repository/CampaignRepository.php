@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Campaign;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
 
 /**
  * @extends ServiceEntityRepository<Campaign>
@@ -15,6 +16,18 @@ class CampaignRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Campaign::class);
     }
+
+    public function findCampaignsByUser(User $user): array
+    {
+        return $this->createQueryBuilder('campaign')
+            ->leftJoin('campaign.gameMaster', 'gameMaster') // Charger la relation
+            ->addSelect('gameMaster') // Inclure les données
+            ->where('campaign.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
 
     //    /**
     //     * @return Campaign[] Returns an array of Campaign objects

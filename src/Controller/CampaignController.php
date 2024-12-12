@@ -18,14 +18,15 @@ class CampaignController extends AbstractController
     public function __construct(private ManagerRegistry $doctrine) {}
 
     #[Route('/campaign', name: 'app_campaign_read')]
-    #[IsGranted(CampaignVoter::CAMPAIGN_VIEW, subject: 'campaign')]
+    #[IsGranted('ROLE_USER')]
     public function read(Request $request): Response
     {
         $user = $this->getUser();
         if ($user instanceof User) {
             // Accéder aux méthodes spécifiques de User
-            $campaignsGM = $user->getCampaigns();
+            // $campaignsGM = [];
             $campaignsCh = [];
+            $campaignsGM = $user->getCampaigns();
             foreach ($user->getCharacters() as $character) {
                 foreach ($character->getCampaigns() as $campaign) {
                     array_push($campaignsCh, $campaign);
@@ -34,8 +35,11 @@ class CampaignController extends AbstractController
         } else {
             // Gérer l'absence ou l'erreur de type
         }
-
-        return new Response(json_encode(["campaignsGM" => $campaignsGM, "campaignsCh" => $campaignsCh]));
+        // dd($campaignsGM);
+        return $this->render('campaign/index.html.twig', [
+            'campaignsGM' => $campaignsGM,
+            'campaignsCh' => $campaignsCh,
+        ]);
     }
 
 
@@ -82,6 +86,14 @@ class CampaignController extends AbstractController
         ]);
     }
 
+    
+    #[Route('/campaign/join', name: 'app_campaign_join')]
+    #[IsGranted('ROLE_USER')]
+    public function join(Request $request, ManagerRegistry $doctrine)
+    {
+        // Logic for joining a campaign (to be implemented)
+    }
+
     #[Route('/campaign/{id}', name: 'app_campaign_truc')]
     #[IsGranted(CampaignVoter::CAMPAIGN_VIEW, subject: 'campaign')]
     public function readDetails(Campaign $campaign): Response
@@ -90,12 +102,5 @@ class CampaignController extends AbstractController
             'campaign' => $campaign,
             'controller_name' => 'CampaignController',
         ]);
-    }
-
-    #[Route('/campaign/join', name: 'app_campaign_join')]
-    #[IsGranted('ROLE_USER')]
-    public function join(Request $request, ManagerRegistry $doctrine)
-    {
-        // Logic for joining a campaign (to be implemented)
     }
 }

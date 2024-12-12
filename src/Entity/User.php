@@ -53,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Campaign>
      */
-    #[ORM\ManyToMany(targetEntity: Campaign::class, mappedBy: 'gameMaster')]
+    #[ORM\ManyToMany(targetEntity: Campaign::class, mappedBy: 'gameMasters')]
     private Collection $campaigns;
 
     /**
