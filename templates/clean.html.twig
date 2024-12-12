@@ -18,7 +18,7 @@
 	<!-- Navigation-->
 	<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
 		<div class="container px-4 px-lg-5">
-			<a class="navbar-brand" href="{{ path('home') }}">My blooooooog</a>
+			<a class="navbar-brand" href="{{ path('home') }}">Chroniques Oubliées Application</a>
 			{% for flash_error in app.flashes('verify_email_error') %}
 				<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
 			{% endfor %}
@@ -29,10 +29,10 @@
 			<div class="collapse navbar-collapse" id="navbarResponsive">
 				<ul class="navbar-nav ms-auto py-4 py-lg-0">
 					<li class="nav-item">
-						<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('home') }}">Home</a>
+						<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('home') }}">Accueil</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('page_about') }}">About</a>
+						<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('page_about') }}">A Propos</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('page_contact') }}">Contact</a>
@@ -42,17 +42,17 @@
 							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_register') }}">S'inscrire</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_login') }}">Login</a>
+							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_login') }}">Se Connecter</a>
 						</li>
 					{% else %}
 						<li class="nav-item">
 							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_campaign_read') }}">Campagnes</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_campaign_read') }}">Personnages</a>
+							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_character_read') }}">Personnages</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_logout') }}">Logout</a>
+							<a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_logout') }}">Se Déconnecter</a>
 						</li>
 					{% endif %}
 				</ul>

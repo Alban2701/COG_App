@@ -182,7 +182,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($post->getUser() === $this) {
+            if ($post->get() === $this) {
                 $post->setUser(null);
             }
         }

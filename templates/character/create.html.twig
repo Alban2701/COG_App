@@ -1,6 +1,6 @@
 {% extends 'clean.html.twig' %}
 
-{% block title %}Vos Personnages
+{% block title %}Créer un personnage
 {% endblock %}
 
 {% block content %}
@@ -27,21 +27,11 @@
 						<div class="container">
 							<div class="row">
 								<div class="col-lg-8 col-md-10 mx-auto">
-									<a href="{{ path('app_character_create') }}" class="btn btn-primary">Créer un Personnage</a>
-									<p></p>
-									{% if characters is defined %}
-										<ul>
-											{% for character in characters %}
-												<li>
-													<strong>{{ character.name }}</strong>
-													-
-													{{ character.description | u.truncate(150, '...')}}
-												</li>
-											{% endfor %}
-										</ul>
-									{% else %}
-										<p>Vous n'avez aucun personnage</p>
-									{% endif %}
+									<h1>Créer un nouveau personnage</h1>
+
+									{{ form_start(form) }}
+									{{ form_widget(form) }}
+									{{ form_end(form) }}
 								</div>
 							</div>
 						</div>

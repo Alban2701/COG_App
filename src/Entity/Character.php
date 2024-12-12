@@ -112,7 +112,7 @@ class Character
         return $this->isPublic;
     }
 
-    public function setPublic(bool $isPublic): static
+    public function setIsPublic(bool $isPublic): static
     {
         $this->isPublic = $isPublic;
 

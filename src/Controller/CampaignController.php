@@ -19,7 +19,7 @@ class CampaignController extends AbstractController
 
     #[Route('/campaign', name: 'app_campaign_read')]
     #[IsGranted('ROLE_USER')]
-    public function read(Request $request): Response
+    public function read(): Response
     {
         $user = $this->getUser();
         if ($user instanceof User) {
