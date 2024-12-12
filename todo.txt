@@ -1,1 +1,2 @@
 Faire un InvitationRequest avec un système de mailing pour rejoindre une campagne
+Ajouter un bouton dans campaign/read.html.twig pour update la campagne dans laquelle on est 
