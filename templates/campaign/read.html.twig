@@ -1,0 +1,49 @@
+{% extends 'clean.html.twig' %}
+
+{% block title %}Consulter la campagne :
+	{{ campaign.name }}
+{% endblock %}
+
+{% block content %}
+	<!-- Page Header -->
+	<header class="masthead" style="background-image: url('{{ asset(" /clean/assets/img/home-bg.jpg") }}')">
+		<div class="container position-relative px-4 px-lg-5">
+			<div class="row gx-4 gx-lg-5 justify-content-center">
+				<div class="col-md-10 col-lg-8 col-xl-7">
+					<div class="site-heading">
+						<h1>{{ campaign.name }}</h1>
+						<span class="subheading">{{ campaign.description}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<main class="mb-4">
+		<div class="container px-4 px-lg-5">
+			<div class="row gx-4 gx-lg-5 justify-content-center">
+				<div class="col-md-10 col-lg-8 col-xl-7">
+					<div class="my-5">
+						{% if isGameMaster %}
+							<p class="text-success">Vous êtes le maître de jeu de cette campagne.</p>
+						{% elseif isPlayer %}
+							<p class="text-primary">Vous êtes un joueur dans cette campagne.</p>
+						{% endif %}
+
+						<h2>Personnages de la campagne</h2>
+						<ul class="list-group">
+							{% for character in campaign.characters %}
+								<li class="list-group-item">
+									{{ character.name }}
+									(Joueur :
+									{{ character.user.username }})
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+{% endblock %}

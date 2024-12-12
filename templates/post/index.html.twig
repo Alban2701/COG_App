@@ -26,7 +26,7 @@
 
 					<!-- Post preview-->
 					<div class="post-preview">
-						<a href="{{ path('post_view', {id: campaign.id}) }}">
+						<a href="{{ path('app_campaign_read', {id: campaign.id}) }}">
 							<h2 class="post-title">{{ campaign.name }}</h2>
 							<h3 class="post-subtitle">{{ campaign.description | u.truncate(150, '...')}}</h3>
 						</a>

@@ -41,7 +41,7 @@ class CampaignVoter extends Voter
         /** @var Campaign $campaign */
         $campaign = $subject;
 
-        return match($attribute) {
+        return match ($attribute) {
             self::CAMPAIGN_VIEW => $this->canView($campaign, $user),
             self::CAMPAIGN_EDIT => $this->canEdit($campaign, $user),
             default => throw new \LogicException('This code should not be reached!')
@@ -52,6 +52,7 @@ class CampaignVoter extends Voter
     {
         // if they can edit, they can view
         if ($this->canEdit($campaign, $user)) {
+            $gameMaster = $campaign->checkGameMaster($user);
             return true;
         }
 
@@ -70,7 +71,6 @@ class CampaignVoter extends Voter
 
     private function canEdit(Campaign $campaign, User $user): bool
     {
-        // this assumes that the Post object has a `checkGameMaster($user)` method
-        return $user === $campaign->checkGameMaster($user);
+        return $campaign->checkGameMaster($user);
     }
 }

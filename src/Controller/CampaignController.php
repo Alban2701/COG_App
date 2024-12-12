@@ -17,14 +17,12 @@ class CampaignController extends AbstractController
 {
     public function __construct(private ManagerRegistry $doctrine) {}
 
-    #[Route('/campaign', name: 'app_campaign_read')]
+    #[Route('/campaign', name: 'app_campaign_index')]
     #[IsGranted('ROLE_USER')]
-    public function read(): Response
+    public function read_all(): Response
     {
         $user = $this->getUser();
         if ($user instanceof User) {
-            // Accéder aux méthodes spécifiques de User
-            // $campaignsGM = [];
             $campaignsCh = [];
             $campaignsGM = $user->getCampaigns();
             foreach ($user->getCharacters() as $character) {
@@ -40,6 +38,40 @@ class CampaignController extends AbstractController
             'campaignsGM' => $campaignsGM,
             'campaignsCh' => $campaignsCh,
         ]);
+    }
+
+    //Consulter une campagne
+    #[Route('/campaign/{id}', name: 'app_campaign_read', requirements: ['id' => '\d+'])]
+    #[IsGranted(CampaignVoter::CAMPAIGN_EDIT, subject: 'campaign')]
+    public function read(Campaign $campaign, Request $request): Response
+    {
+        $user = $this->getUser();
+        // Vérifie si l'utilisateur est connecté et correspond bien à un User
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour consulter cette campagne.');
+        }
+        
+        // Vérifie si l'utilisateur est le maître de jeu de cette campagne
+        $isGameMaster = $campaign->getGameMasters()->contains($user);
+        // Vérifie si l'utilisateur a un personnage dans cette campagne
+        $isPlayer = false;
+        foreach ($user->getCharacters() as $character) {
+            if ($campaign->getCharacters()->contains($character)) {
+                $isPlayer = true;
+                break;
+            }
+        }
+        // Si l'utilisateur n'est ni maître de jeu ni joueur, interdit l'accès
+        if (!$isGameMaster && !$isPlayer) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette campagne.');
+        }
+        // Render de la vue pour afficher les détails de la campagne
+        return $this->render('campaign/read.html.twig', [
+            'campaign' => $campaign,
+            'isGameMaster' => $isGameMaster,
+            'isPlayer' => $isPlayer,
+        ]);
+        
     }
 
 
@@ -86,7 +118,7 @@ class CampaignController extends AbstractController
         ]);
     }
 
-    
+
     #[Route('/campaign/join', name: 'app_campaign_join')]
     #[IsGranted('ROLE_USER')]
     public function join(Request $request, ManagerRegistry $doctrine)

@@ -27,16 +27,17 @@
 						<div class="container">
 							<div class="row">
 								<div class="col-lg-8 col-md-10 mx-auto">
-									<a href="{{ path('app_campaign_create') }}" class="btn btn-primary">Créer une campagne</a>
 									<p></p>
 									<h2>Campagnes en tant que Maître du Jeu</h2>
 									{% if campaignsGM is defined %}
 										<ul>
 											{% for campaign in campaignsGM %}
 												<li>
-													<strong>{{ campaign.name }}</strong>
-													-
-													{{ campaign.description }}
+													<a href="{{ path('app_campaign_read', { id: campaign.id }) }}" class="text-decoration-none">
+														<strong>{{ campaign.name }}</strong>
+														-
+														{{ campaign.description | u.truncate(100, "...")}}
+													</a>
 												</li>
 											{% endfor %}
 										</ul>
@@ -49,6 +50,7 @@
 											{% for campaign in campaignsCh %}
 												<li>
 													<strong>{{ campaign.name }}</strong>
+													-
 													{{ campaign.description }}
 												</li>
 											{% endfor %}

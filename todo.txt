@@ -1,0 +1,1 @@
+Faire un InvitationRequest avec un système de mailing pour rejoindre une campagne

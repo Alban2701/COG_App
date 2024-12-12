@@ -16,7 +16,7 @@ class CharacterController extends AbstractController
 
     public function __construct(private ManagerRegistry $doctrine) {}
 
-    #[Route('/character', name: 'app_character_read')]
+    #[Route('/character', name: 'app_character_index')]
     #[IsGranted('ROLE_USER')]
 
     public function read(): Response
