@@ -50,27 +50,22 @@ class CampaignVoter extends Voter
 
     private function canView(Campaign $campaign, User $user): bool
     {
-        // if they can edit, they can view
-        if ($this->canEdit($campaign, $user)) {
-            $gameMaster = $campaign->checkGameMaster($user);
-            return true;
-        }
+        return $this->canEdit($campaign, $user) || $this->isPlayerInCampaign($campaign, $user);
+    }
 
-        /**
-         * Check if user has at least one character in this campaign
-         */
-        $characters = $campaign->getCharacters();
-        foreach ($characters as $character) {
-            if ($character->getUserId() === $user->getId()) {
+    private function canEdit(Campaign $campaign, User $user): bool
+    {
+        return $campaign->getGameMasters()->contains($user);
+    }
+
+    private function isPlayerInCampaign(Campaign $campaign, User $user): bool
+    {
+        foreach ($user->getCharacters() as $character) {
+            if ($campaign->getCharacters()->contains($character)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    private function canEdit(Campaign $campaign, User $user): bool
-    {
-        return $campaign->checkGameMaster($user);
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'clean.html.twig' %}
 
-{% block title %}Consulter la campagne :
+{% block title %}
 	{{ campaign.name }}
 {% endblock %}
 
@@ -12,7 +12,7 @@
 				<div class="col-md-10 col-lg-8 col-xl-7">
 					<div class="site-heading">
 						<h1>{{ campaign.name }}</h1>
-						<span class="subheading">{{ campaign.description}}</span>
+						<span class="subheading">{{ campaign.description }}</span>
 					</div>
 				</div>
 			</div>
@@ -26,7 +26,10 @@
 				<div class="col-md-10 col-lg-8 col-xl-7">
 					<div class="my-5">
 						{% if isGameMaster %}
-							<p class="text-success">Vous êtes le maître de jeu de cette campagne.</p>
+							<div class="mb-4">
+								<p class="text-success">Vous êtes le maître de jeu de cette campagne.</p>
+								<a href="{{ path('app_campaign_update', {id: campaign.id}) }}" class="btn btn-primary">Modifier la campagne</a>
+							</div>
 						{% elseif isPlayer %}
 							<p class="text-primary">Vous êtes un joueur dans cette campagne.</p>
 						{% endif %}

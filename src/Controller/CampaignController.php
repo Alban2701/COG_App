@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\CampaignAccessService;
 use App\Entity\User;
 
 class CampaignController extends AbstractController
@@ -42,56 +43,44 @@ class CampaignController extends AbstractController
 
     //Consulter une campagne
     #[Route('/campaign/{id}', name: 'app_campaign_read', requirements: ['id' => '\d+'])]
-    #[IsGranted(CampaignVoter::CAMPAIGN_EDIT, subject: 'campaign')]
-    public function read(Campaign $campaign, Request $request): Response
+    #[IsGranted(CampaignVoter::CAMPAIGN_VIEW, subject: 'campaign')]
+    public function read(Campaign $campaign, CampaignAccessService $accessService): Response
     {
         $user = $this->getUser();
-        // Vérifie si l'utilisateur est connecté et correspond bien à un User
-        if (!$user instanceof User) {
-            throw $this->createAccessDeniedException('Vous devez être connecté pour consulter cette campagne.');
-        }
-        
-        // Vérifie si l'utilisateur est le maître de jeu de cette campagne
-        $isGameMaster = $campaign->getGameMasters()->contains($user);
-        // Vérifie si l'utilisateur a un personnage dans cette campagne
-        $isPlayer = false;
-        foreach ($user->getCharacters() as $character) {
-            if ($campaign->getCharacters()->contains($character)) {
-                $isPlayer = true;
-                break;
-            }
-        }
-        // Si l'utilisateur n'est ni maître de jeu ni joueur, interdit l'accès
-        if (!$isGameMaster && !$isPlayer) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette campagne.');
-        }
-        // Render de la vue pour afficher les détails de la campagne
+        $accessDetails = $accessService->calculateAccessDetails($campaign, $user);
+
         return $this->render('campaign/read.html.twig', [
             'campaign' => $campaign,
-            'isGameMaster' => $isGameMaster,
-            'isPlayer' => $isPlayer,
+            'isGameMaster' => $accessDetails['isGameMaster'],
+            'isPlayer' => $accessDetails['isPlayer'],
         ]);
-        
     }
 
 
-    //Editer une campagne
+    // Editer une campagne
     #[Route('/campaign/{id}/update', name: 'app_campaign_update')]
     #[IsGranted(CampaignVoter::CAMPAIGN_EDIT, subject: 'campaign')]
     public function update(Campaign $campaign, Request $request): Response
     {
         $form = $this->createForm(CampaignType::class, $campaign);
+        $form->handleRequest($request); // Permet au formulaire de traiter la requête
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->doctrine->getManager();
-            $entityManager->persist($campaign);
+            $entityManager->persist($campaign); // Utile si des entités liées changent
             $entityManager->flush();
-            return $this->redirectToRoute('home');
+
+            // Redirection vers la route "read" après la validation
+            return $this->redirectToRoute('app_campaign_read', [
+                'id' => $campaign->getId(),
+            ]);
         }
 
         return $this->render('post/add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/campaign/create', name: 'app_campaign_create')]
     #[IsGranted('ROLE_USER')]
