@@ -50,7 +50,13 @@ class Campaign
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
-    private bool $active = false; // Par défaut, les campagnes sont inactives
+    private bool $active = false;
+
+    /**
+     * @var Collection<int, CampaignInvitation>
+     */
+    #[ORM\OneToMany(targetEntity: CampaignInvitation::class, mappedBy: 'campaign', orphanRemoval: true)]
+    private Collection $invitations; // Par défaut, les campagnes sont inactives
 
     
     public function __construct()
@@ -58,6 +64,7 @@ class Campaign
         $this->gameMasters = new ArrayCollection();
         $this->characters = new ArrayCollection();
         $this->posts = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -205,6 +212,36 @@ class Campaign
     {
         $this->active = $active;
     
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CampaignInvitation>
+     */
+    public function getInvitations(): Collection
+    {
+        return $this->invitations;
+    }
+
+    public function addInvitation(CampaignInvitation $invitation): static
+    {
+        if (!$this->invitations->contains($invitation)) {
+            $this->invitations->add($invitation);
+            $invitation->setCampaign($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitation(CampaignInvitation $invitation): static
+    {
+        if ($this->invitations->removeElement($invitation)) {
+            // set the owning side to null (unless already changed)
+            if ($invitation->getCampaign() === $this) {
+                $invitation->setCampaign(null);
+            }
+        }
+
         return $this;
     }
 }

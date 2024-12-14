@@ -35,6 +35,9 @@
 						{% endif %}
 
 						<h2>Personnages de la campagne</h2>
+						{% if isGameMaster %}
+							<a href="{{ path('app_campaign_invite', {id: campaign.id}) }}" class="btn btn-primary">Inviter un joueur<a/>
+						{% endif %}
 						<ul class="list-group">
 							{% for character in campaign.characters %}
 								<li class="list-group-item">

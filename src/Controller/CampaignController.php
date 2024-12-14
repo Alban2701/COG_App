@@ -2,21 +2,30 @@
 
 namespace App\Controller;
 
-use App\Entity\Campaign;
-use App\Form\CampaignType;
+use App\Entity\{Campaign, CampaignInvitation, User};
+use App\Form\{CampaignType, CampaignInvitationType};
 use App\Security\Voter\CampaignVoter;
+use App\Service\CampaignAccessService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use RandomLib\Factory;
+use Symfony\Component\HttpFoundation\{Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Service\CampaignAccessService;
-use App\Entity\User;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
+
 
 class CampaignController extends AbstractController
 {
-    public function __construct(private ManagerRegistry $doctrine) {}
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     #[Route('/campaign', name: 'app_campaign_index')]
     #[IsGranted('ROLE_USER')]
@@ -66,9 +75,8 @@ class CampaignController extends AbstractController
         $form->handleRequest($request); // Permet au formulaire de traiter la requête
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->doctrine->getManager();
-            $entityManager->persist($campaign); // Utile si des entités liées changent
-            $entityManager->flush();
+            $this->entityManager->persist($campaign);
+            $this->entityManager->flush();
 
             // Redirection vers la route "read" après la validation
             return $this->redirectToRoute('app_campaign_read', [
@@ -79,6 +87,74 @@ class CampaignController extends AbstractController
         return $this->render('post/add.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    public function generateInvitationToken(): string
+    {
+        $factory = new Factory;
+        $generator = $factory->getMediumStrengthGenerator();
+        return $generator->generateString(64); // Longueur du token
+    }
+
+    #[Route('/campaign/{id}/invite', name: 'app_campaign_invite')]
+    public function invite(Campaign $campaign, Request $request, MailerInterface $mailer): Response
+    {
+        $form = $this->createForm(CampaignInvitationType::class); // Formulaire d'invitation (email)
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->getData()['email']; // Récupère l'email du joueur à inviter
+            $token = $this->generateInvitationToken(); // Génère un token unique
+
+            // Envoi de l'email d'invitation
+            $emailMessage = (new Email())
+                ->from('noreply@cog-app.com') // Adresse de l'expéditeur
+                ->to($email) // L'email du joueur à inviter
+                ->subject('Invitation à rejoindre la campagne')
+                ->html('<p>Voici votre lien d\'invitation : <a href="' . $this->generateUrl('app_campaign_join', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL) . '">Rejoindre la campagne</a></p>');
+
+            $mailer->send($emailMessage);
+
+            // Sauvegarder le token dans la base de données (lié à la campagne et à l'invité)
+            $invitation = new CampaignInvitation(); // Model Invitation à créer
+            $invitation->setCampaign($campaign);
+            $invitation->setEmail($email);
+            $invitation->setToken($token);
+
+            $this->entityManager->persist($invitation);
+            $this->entityManager->flush();
+
+            // Rediriger vers la page de la campagne
+            return $this->redirectToRoute('app_campaign_read', ['id' => $campaign->getId()]);
+        }
+
+        return $this->render('campaign/invite.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/invite/{token}', name: 'app_campaign_join', methods: ['GET'])]
+    public function joinCampaign(string $token): Response 
+    {
+        // Logique de vérification de l'invitation
+        // (valider le token, vérifier si l'invitation existe, etc.)
+
+        // Récupérer l'invitation avec le token (tu devras probablement l'ajouter dans ton repository)
+        $invitation = $this->entityManager->getRepository(CampaignInvitation::class)->findOneBy(['token' => $token]);
+
+        if (!$invitation) {
+            // Si l'invitation est introuvable, afficher un message d'erreur
+            return $this->createNotFoundException('L\'invitation est invalide ou a expiré.');
+        }
+
+        // Vérifier si l'utilisateur est déjà connecté
+        if ($this->getUser()) {
+            // Si l'utilisateur est connecté, l'ajouter à la campagne et rediriger vers la page de la campagne
+            // Ici, tu peux avoir une méthode qui ajoute l'utilisateur à la campagne
+            $this->($invitation, $this->getUser());
+
+            return $this->redirectToRoute('app_campaign_view', ['id' => $invitation->getCampaign()->getId()]);
+        }
     }
 
 
@@ -94,9 +170,8 @@ class CampaignController extends AbstractController
             // Ajout du GameMaster (l'utilisateur actuel) à la campagne
             $campaign->addGameMaster($this->getUser());
             // Enregistrement de la campagne
-            $em = $this->doctrine->getManager();
-            $em->persist($campaign);
-            $em->flush();
+            $this->entityManager->persist($campaign);
+            $this->entityManager->flush();
 
             // Rediriger vers la page d'accueil après la création
             return $this->redirectToRoute('home');
