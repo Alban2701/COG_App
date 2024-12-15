@@ -168,7 +168,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->posts;
     }
 
-    public function addPost(Campaign $post): static
+    public function addPost(Campaign $post): static // A corriger
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
@@ -178,7 +178,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removePost(Campaign $post): static
+    public function removePost(Campaign $post): static // A corriger
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)

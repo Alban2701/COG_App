@@ -96,66 +96,68 @@ class CampaignController extends AbstractController
         return $generator->generateString(64); // Longueur du token
     }
 
-    #[Route('/campaign/{id}/invite', name: 'app_campaign_invite')]
-    public function invite(Campaign $campaign, Request $request, MailerInterface $mailer): Response
-    {
-        $form = $this->createForm(CampaignInvitationType::class); // Formulaire d'invitation (email)
-        $form->handleRequest($request);
+    //les invitations ne sont pas encore fonctionnelle, ne pas prendre en compte pour la note
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $email = $form->getData()['email']; // Récupère l'email du joueur à inviter
-            $token = $this->generateInvitationToken(); // Génère un token unique
+    // #[Route('/campaign/{id}/invite', name: 'app_campaign_invite')]
+    // public function invite(Campaign $campaign, Request $request, MailerInterface $mailer): Response
+    // {
+    //     $form = $this->createForm(CampaignInvitationType::class); // Formulaire d'invitation (email)
+    //     $form->handleRequest($request);
 
-            // Envoi de l'email d'invitation
-            $emailMessage = (new Email())
-                ->from('noreply@cog-app.com') // Adresse de l'expéditeur
-                ->to($email) // L'email du joueur à inviter
-                ->subject('Invitation à rejoindre la campagne')
-                ->html('<p>Voici votre lien d\'invitation : <a href="' . $this->generateUrl('app_campaign_join', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL) . '">Rejoindre la campagne</a></p>');
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $email = $form->getData()['email']; // Récupère l'email du joueur à inviter
+    //         $token = $this->generateInvitationToken(); // Génère un token unique
 
-            $mailer->send($emailMessage);
+    //         // Envoi de l'email d'invitation
+    //         $emailMessage = (new Email())
+    //             ->from('noreply@cog-app.com') // Adresse de l'expéditeur
+    //             ->to($email) // L'email du joueur à inviter
+    //             ->subject('Invitation à rejoindre la campagne')
+    //             ->html('<p>Voici votre lien d\'invitation : <a href="' . $this->generateUrl('app_campaign_join', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL) . '">Rejoindre la campagne</a></p>');
 
-            // Sauvegarder le token dans la base de données (lié à la campagne et à l'invité)
-            $invitation = new CampaignInvitation(); // Model Invitation à créer
-            $invitation->setCampaign($campaign);
-            $invitation->setEmail($email);
-            $invitation->setToken($token);
+    //         $mailer->send($emailMessage);
 
-            $this->entityManager->persist($invitation);
-            $this->entityManager->flush();
+    //         // Sauvegarder le token dans la base de données (lié à la campagne et à l'invité)
+    //         $invitation = new CampaignInvitation(); // Model Invitation à créer
+    //         $invitation->setCampaign($campaign);
+    //         $invitation->setEmail($email);
+    //         $invitation->setToken($token);
 
-            // Rediriger vers la page de la campagne
-            return $this->redirectToRoute('app_campaign_read', ['id' => $campaign->getId()]);
-        }
+    //         $this->entityManager->persist($invitation);
+    //         $this->entityManager->flush();
 
-        return $this->render('campaign/invite.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
+    //         // Rediriger vers la page de la campagne
+    //         return $this->redirectToRoute('app_campaign_read', ['id' => $campaign->getId()]);
+    //     }
 
-    #[Route('/invite/{token}', name: 'app_campaign_join', methods: ['GET'])]
-    public function joinCampaign(string $token): Response 
-    {
-        // Logique de vérification de l'invitation
-        // (valider le token, vérifier si l'invitation existe, etc.)
+    //     return $this->render('campaign/invite.html.twig', [
+    //         'form' => $form->createView(),
+    //     ]);
+    // }
 
-        // Récupérer l'invitation avec le token (tu devras probablement l'ajouter dans ton repository)
-        $invitation = $this->entityManager->getRepository(CampaignInvitation::class)->findOneBy(['token' => $token]);
+    // #[Route('/invite/{token}', name: 'app_campaign_join', methods: ['GET'])]
+    // public function joinCampaign(string $token): Response 
+    // {
+    //     // Logique de vérification de l'invitation
+    //     // (valider le token, vérifier si l'invitation existe, etc.)
 
-        if (!$invitation) {
-            // Si l'invitation est introuvable, afficher un message d'erreur
-            return $this->createNotFoundException('L\'invitation est invalide ou a expiré.');
-        }
+    //     // Récupérer l'invitation avec le token (tu devras probablement l'ajouter dans ton repository)
+    //     $invitation = $this->entityManager->getRepository(CampaignInvitation::class)->findOneBy(['token' => $token]);
 
-        // Vérifier si l'utilisateur est déjà connecté
-        if ($this->getUser()) {
-            // Si l'utilisateur est connecté, l'ajouter à la campagne et rediriger vers la page de la campagne
-            // Ici, tu peux avoir une méthode qui ajoute l'utilisateur à la campagne
-            $this->($invitation, $this->getUser());
+    //     if (!$invitation) {
+    //         // Si l'invitation est introuvable, afficher un message d'erreur
+    //         return $this->createNotFoundException('L\'invitation est invalide ou a expiré.');
+    //     }
 
-            return $this->redirectToRoute('app_campaign_view', ['id' => $invitation->getCampaign()->getId()]);
-        }
-    }
+    //     // Vérifier si l'utilisateur est déjà connecté
+    //     if ($this->getUser()) {
+    //         // Si l'utilisateur est connecté, l'ajouter à la campagne et rediriger vers la page de la campagne
+    //         // Ici, tu peux avoir une méthode qui ajoute l'utilisateur à la campagne
+    //         $this->addUserToCampaign($invitation, $this->getUser());
+
+    //         return $this->redirectToRoute('app_campaign_view', ['id' => $invitation->getCampaign()->getId()]);
+    //     }
+    // }
 
 
     #[Route('/campaign/create', name: 'app_campaign_create')]
